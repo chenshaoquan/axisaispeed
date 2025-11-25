@@ -354,7 +354,61 @@ chmod +x "$UPDATE_SCRIPT"
 echo -e "${GREEN}✓ 更新脚本已创建${NC}"
 
 echo ""
-echo -e "${YELLOW}[5/6] 创建 systemd 服务...${NC}"
+echo -e "${YELLOW}[5/7] 创建手动执行脚本...${NC}"
+
+# 创建手动执行脚本（带实时输出）
+MANUAL_SCRIPT="/var/lib/vastai_kaalia/manual_speedtest.sh"
+cat > "$MANUAL_SCRIPT" << 'MANUAL_SCRIPT_EOF'
+#!/bin/bash
+
+# 手动执行测速脚本 - 带实时输出
+
+echo "=== 手动触发测速 ==="
+echo "Time: $(date)"
+echo ""
+
+# 启动服务
+echo "启动测速服务..."
+systemctl start vastai-speedtest.service
+
+# 等待服务启动
+sleep 1
+
+# 实时显示日志
+echo ""
+echo "=== 执行日志 ==="
+echo ""
+
+# 使用 journalctl -f 实时跟踪，直到服务完成
+timeout 120 journalctl -u vastai-speedtest.service -f -n 0 &
+JOURNAL_PID=$!
+
+# 等待服务完成（最多2分钟）
+COUNTER=0
+while systemctl is-active --quiet vastai-speedtest.service && [ $COUNTER -lt 120 ]; do
+    sleep 1
+    ((COUNTER++))
+done
+
+# 再等待一秒确保日志输出完整
+sleep 2
+
+# 停止日志跟踪
+kill $JOURNAL_PID 2>/dev/null
+
+echo ""
+echo "=== 测速完成 ==="
+echo ""
+
+# 显示最后的状态
+systemctl status vastai-speedtest.service --no-pager -l | tail -n 20
+MANUAL_SCRIPT_EOF
+
+chmod +x "$MANUAL_SCRIPT"
+echo -e "${GREEN}✓ 手动执行脚本已创建${NC}"
+
+echo ""
+echo -e "${YELLOW}[6/7] 创建 systemd 服务...${NC}"
 
 # 创建 systemd service
 cat > "$SERVICE_FILE" << 'SERVICE_EOF'
@@ -378,7 +432,7 @@ SERVICE_EOF
 echo -e "${GREEN}✓ Systemd 服务已创建${NC}"
 
 echo ""
-echo -e "${YELLOW}[6/7] 创建定时器 (每天随机时间运行)...${NC}"
+echo -e "${YELLOW}[7/7] 创建定时器 (每天随机时间运行)...${NC}"
 
 # 创建 systemd timer
 cat > "$TIMER_FILE" << 'TIMER_EOF'
@@ -398,7 +452,7 @@ TIMER_EOF
 echo -e "${GREEN}✓ 定时器已创建${NC}"
 
 echo ""
-echo -e "${YELLOW}[7/7] 启用并启动服务...${NC}"
+echo -e "${YELLOW}启用并启动服务...${NC}"
 
 # 重载 systemd
 systemctl daemon-reload
@@ -428,15 +482,20 @@ echo ""
 
 echo -e "${YELLOW}立即执行测速...${NC}"
 echo ""
-cd /var/lib/vastai_kaalia/ && python3 ./send_mach_info.py --speedtest
+systemctl start vastai-speedtest.service
+sleep 2
+journalctl -u vastai-speedtest.service -n 50 --no-pager
 
 echo ""
 echo -e "${BLUE}═══════════════════════════════════════════════${NC}"
 echo -e "${GREEN}常用命令:${NC}"
 echo -e "${BLUE}═══════════════════════════════════════════════${NC}"
 echo ""
-echo -e "${YELLOW}手动执行测速:${NC}"
-echo -e "  ${GREEN}cd /var/lib/vastai_kaalia/ && python3 ./send_mach_info.py --speedtest${NC}"
+echo -e "${YELLOW}手动执行测速（推荐）:${NC}"
+echo -e "  ${GREEN}/var/lib/vastai_kaalia/manual_speedtest.sh${NC}"
+echo ""
+echo -e "${YELLOW}手动执行测速（快速）:${NC}"
+echo -e "  ${GREEN}systemctl start vastai-speedtest.service && sleep 2 && journalctl -u vastai-speedtest.service -n 50 --no-pager${NC}"
 echo ""
 echo -e "${YELLOW}查看实时日志:${NC}"
 echo -e "  ${GREEN}journalctl -u vastai-speedtest.service -f${NC}"
