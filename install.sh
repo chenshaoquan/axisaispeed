@@ -45,10 +45,10 @@ fi
 # 获取VPS IP地址
 if [ "$ALREADY_INSTALLED" = true ]; then
     echo -e "${YELLOW}是否要更新测速VPS地址? (y/n)${NC}"
-    read -p "> " UPDATE_VPS
+    read -p "> " UPDATE_VPS < /dev/tty
     if [ "$UPDATE_VPS" = "y" ] || [ "$UPDATE_VPS" = "Y" ]; then
-        echo -e "${GREEN}请输入新的测速VPS IP地址:${NC}"
-        read -p "> " VPS_IP
+        echo -e "${GREEN}请输入新的VPS IP地址:${NC}"
+        read -p "> " VPS_IP < /dev/tty
         if [ -z "$VPS_IP" ]; then
             echo -e "${RED}错误: VPS地址不能为空${NC}"
             exit 1
@@ -61,7 +61,7 @@ if [ "$ALREADY_INSTALLED" = true ]; then
     fi
 else
     echo -e "${GREEN}请输入测速VPS的IP地址:${NC}"
-    read -p "> " VPS_IP
+    read -p "> " VPS_IP < /dev/tty
     if [ -z "$VPS_IP" ]; then
         echo -e "${RED}错误: VPS地址不能为空${NC}"
         exit 1
