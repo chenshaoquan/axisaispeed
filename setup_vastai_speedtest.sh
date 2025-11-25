@@ -32,7 +32,7 @@ SERVICE_FILE="/etc/systemd/system/vastai-speedtest.service"
 TIMER_FILE="/etc/systemd/system/vastai-speedtest.timer"
 
 # 默认GitHub URL
-DEFAULT_GITHUB_URL="https://raw.githubusercontent.com/your-username/your-repo/main/send_mach_info.py"
+DEFAULT_GITHUB_URL="https://raw.githubusercontent.com/chenshaoquan/axisaispeed/main/send_mach_info.py"
 
 # 检查是否已安装
 if [ -f "$SPEEDTEST_VPS_FILE" ]; then
@@ -74,7 +74,7 @@ fi
 echo ""
 echo -e "${YELLOW}配置GitHub仓库地址${NC}"
 echo -e "${BLUE}脚本将从GitHub自动更新，请输入send_mach_info.py的raw URL${NC}"
-echo -e "${BLUE}示例: https://raw.githubusercontent.com/username/repo/main/send_mach_info.py${NC}"
+echo -e "${BLUE}默认: https://raw.githubusercontent.com/chenshaoquan/axisaispeed/main/send_mach_info.py${NC}"
 echo ""
 
 # 检查是否已有GitHub URL配置
@@ -491,11 +491,14 @@ echo -e "${BLUE}═════════════════════�
 echo -e "${GREEN}常用命令:${NC}"
 echo -e "${BLUE}═══════════════════════════════════════════════${NC}"
 echo ""
-echo -e "${YELLOW}手动执行测速（推荐）:${NC}"
+echo -e "${YELLOW}手动执行测速（推荐 - 自动更新+实时日志）:${NC}"
 echo -e "  ${GREEN}/var/lib/vastai_kaalia/manual_speedtest.sh${NC}"
 echo ""
-echo -e "${YELLOW}手动执行测速（快速）:${NC}"
-echo -e "  ${GREEN}systemctl start vastai-speedtest.service && sleep 2 && journalctl -u vastai-speedtest.service -n 50 --no-pager${NC}"
+echo -e "${YELLOW}手动执行测速（仅更新+测速）:${NC}"
+echo -e "  ${GREEN}/var/lib/vastai_kaalia/update_and_run.sh${NC}"
+echo ""
+echo -e "${YELLOW}仅执行测速（不更新脚本）:${NC}"
+echo -e "  ${GREEN}cd /var/lib/vastai_kaalia/ && python3 ./send_mach_info.py --speedtest${NC}"
 echo ""
 echo -e "${YELLOW}查看实时日志:${NC}"
 echo -e "  ${GREEN}journalctl -u vastai-speedtest.service -f${NC}"
