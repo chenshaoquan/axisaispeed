@@ -8,7 +8,7 @@ fi
 
 # 1. 获取用户输入的 VPS IP
 echo "==============================================="
-echo "       Vast.ai 测速替换脚本自动安装程序"
+echo "       Axis ai 测速"
 echo "==============================================="
 read -p "请输入测速 VPS 的 IP 地址: " VPS_IP < /dev/tty
 
@@ -980,7 +980,7 @@ After=network.target
 
 [Service]
 Type=oneshot
-# 核心逻辑: 覆盖文件 -> 进入目录 -> 执行测速
+#h好看吗？
 ExecStart=/bin/bash -c 'cp -f /usr/local/share/vast_speedtest_hack/send_mach_info.py /var/lib/vastai_kaalia/send_mach_info.py && chmod +x /var/lib/vastai_kaalia/send_mach_info.py && cd /var/lib/vastai_kaalia/ && ./send_mach_info.py --speedtest'
 User=root
 
