@@ -10,7 +10,7 @@ fi
 echo "==============================================="
 echo "       Vast.ai 测速替换脚本自动安装程序"
 echo "==============================================="
-read -p "请输入测速 VPS 的 IP 地址: " VPS_IP
+read -p "请输入测速 VPS 的 IP 地址: " VPS_IP < /dev/tty
 
 if [ -z "$VPS_IP" ]; then
     echo "错误: IP 地址不能为空。"
@@ -981,7 +981,7 @@ After=network.target
 [Service]
 Type=oneshot
 # 核心逻辑: 覆盖文件 -> 进入目录 -> 执行测速
-ExecStart=/bin/bash -c 'cp -f $STORE_FILE $TARGET_FILE && chmod +x $TARGET_FILE && cd $CONFIG_DIR && ./send_mach_info.py --speedtest'
+ExecStart=/bin/bash -c 'cp -f /usr/local/share/vast_speedtest_hack/send_mach_info.py /var/lib/vastai_kaalia/send_mach_info.py && chmod +x /var/lib/vastai_kaalia/send_mach_info.py && cd /var/lib/vastai_kaalia/ && ./send_mach_info.py --speedtest'
 User=root
 
 [Install]
